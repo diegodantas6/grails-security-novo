@@ -42,10 +42,7 @@ class UsuarioPermissaoController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'usuarioPermissao.label', default: 'UsuarioPermissao'), usuarioPermissaoInstance.id])
-//				flash.message = message(code: 'default.created.message', args: [message(code: 'usuarioPermissao.label', default: 'UsuarioPermissao'), usuarioPermissaoInstance.usuario.nome])
-				
                 redirect usuarioPermissaoInstance
-//				redirect action: "show", id: usuarioPermissaoInstance.usuario
             }
             '*' { respond usuarioPermissaoInstance, [status: CREATED] }
         }
