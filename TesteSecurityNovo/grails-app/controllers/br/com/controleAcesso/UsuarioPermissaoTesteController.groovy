@@ -3,6 +3,7 @@ package br.com.controleAcesso
 
 
 import static org.springframework.http.HttpStatus.*
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 
@@ -10,97 +11,44 @@ import grails.transaction.Transactional
 @Transactional(readOnly = true)
 class UsuarioPermissaoTesteController {
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+	static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond UsuarioPermissao.list(params), model:[usuarioPermissaoInstanceCount: UsuarioPermissao.count()]
-    }
+	def index() {
+		List listGrupo = PermissaoGrupo.list()
+		List<String> retorno = new ArrayList<String>()
 
-    def show(UsuarioPermissao usuarioPermissaoInstance) {
-        respond usuarioPermissaoInstance
-    }
+		for (i in listGrupo) {
 
-    def create() {
-        respond new UsuarioPermissao(params)
-    }
+			PermissaoGrupo g = (PermissaoGrupo) i
 
-    @Transactional
-    def save(UsuarioPermissao usuarioPermissaoInstance) {
-        if (usuarioPermissaoInstance == null) {
-            notFound()
-            return
-        }
+			List listPermissao = Permissao.findAllByGrupo(i)
 
-        if (usuarioPermissaoInstance.hasErrors()) {
-            respond usuarioPermissaoInstance.errors, view:'create'
-            return
-        }
+			if (!(listPermissao.empty)) {
 
-        usuarioPermissaoInstance.save flush:true
+				List<String> retornoPermissao = new ArrayList<String>()
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'usuarioPermissao.label', default: 'UsuarioPermissao'), usuarioPermissaoInstance.id])
-                redirect usuarioPermissaoInstance
-            }
-            '*' { respond usuarioPermissaoInstance, [status: CREATED] }
-        }
-    }
+				for (z in listPermissao) {
 
-    def edit(UsuarioPermissao usuarioPermissaoInstance) {
-        respond usuarioPermissaoInstance
-    }
+					Permissao p = (Permissao) z
 
-    @Transactional
-    def update(UsuarioPermissao usuarioPermissaoInstance) {
-        if (usuarioPermissaoInstance == null) {
-            notFound()
-            return
-        }
+					retornoPermissao.add(item: [id: p.id, label: p.descricao, checked: false])
+				}
 
-        if (usuarioPermissaoInstance.hasErrors()) {
-            respond usuarioPermissaoInstance.errors, view:'edit'
-            return
-        }
+				retorno.add(item: [id: g.id, label: g.nome , checked: false], children: retornoPermissao).toString();
+			}
+		}
 
-        usuarioPermissaoInstance.save flush:true
+		JSON.use('deep')
+		def converter = retorno as JSON
+		String vai = converter.toString()
+		println vai;
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'UsuarioPermissao.label', default: 'UsuarioPermissao'), usuarioPermissaoInstance.id])
-                redirect usuarioPermissaoInstance
-            }
-            '*'{ respond usuarioPermissaoInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
-    def delete(UsuarioPermissao usuarioPermissaoInstance) {
-
-        if (usuarioPermissaoInstance == null) {
-            notFound()
-            return
-        }
-
-        usuarioPermissaoInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'UsuarioPermissao.label', default: 'UsuarioPermissao'), usuarioPermissaoInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
-    }
-
-    protected void notFound() {
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuarioPermissao.label', default: 'UsuarioPermissao'), params.id])
-                redirect action: "index", method: "GET"
-            }
-            '*'{ render status: NOT_FOUND }
-        }
-    }
+//		println retorno
+		
+		[retorno : vai]
+//		[retorno : retorno]
+//		[retorno : retorno.toString()]
+//		[retorno : retorno as JSON]
+		
+	}
 }
