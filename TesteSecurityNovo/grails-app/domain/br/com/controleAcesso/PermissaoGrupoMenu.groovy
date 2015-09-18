@@ -1,9 +1,8 @@
 package br.com.controleAcesso
 
-class PermissaoGrupo {
-
+class PermissaoGrupoMenu {
+	
 	String nome
-	PermissaoGrupoMenu menu
 
 	static constraints = {
 		nome blank: false, unique: true
@@ -13,5 +12,4 @@ class PermissaoGrupo {
 	String toString() {
 		nome
 	}
-	
 }
