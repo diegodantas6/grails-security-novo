@@ -15,9 +15,16 @@
 
 <body>
 
-	<div id="main-container">
+	<div id="main-container" align="center">
 
-		<h1>jQuery highchecktree Plugin Demo</h1>
+		<g:select id="usuario" 
+			name="usuario.id" 
+			from="${br.com.controleAcesso.Usuario.list()}" 
+			optionKey="id" 
+			required="" 
+			value="${usuarioPermissaoInstance?.usuario?.id}" 
+			class="many-to-one" 
+			onChange="${remoteFunction(action: 'bookByName')}" />
 		
 		<div id="tree-container"></div>
 		

@@ -24,17 +24,9 @@ class UsuarioPermissaoTesteController {
 		
 		for (permissaoGrupoMenu in listPermissaoGrupoMenu) {
 			
-			JSONObject jPermissaoGrupoMenu = new JSONObject()
+			JSONObject retornoAux = new JSONObject()
 			
-			jPermissaoGrupoMenu.putAt("id", "'" + permissaoGrupoMenu.id + "'")
-			jPermissaoGrupoMenu.putAt("label", "'" + permissaoGrupoMenu.nome + "'")
-			jPermissaoGrupoMenu.putAt("checked", false)
-			
-			JSONObject jPermissaoGrupoMenuItem = new JSONObject()
-			
-			jPermissaoGrupoMenuItem.putAt("item", jPermissaoGrupoMenu)
-			
-			retorno.add(jPermissaoGrupoMenuItem)
+			retornoAux.putAt("item", getJsonItemByPermissaoGrupoMenu(permissaoGrupoMenu))
 
 			JSONArray jPermissaoGrupoMenuChildren = new JSONArray()
 			
@@ -42,107 +34,74 @@ class UsuarioPermissaoTesteController {
 			
 			for (permissaoGrupo in listPermissaoGrupo) {
 				
-				JSONObject jPermissaoGrupo = new JSONObject()
+				JSONObject jPermissaoGrupoMenuChildrenAux = new JSONObject()
 				
-				jPermissaoGrupo.putAt("id", "'" + permissaoGrupo.id + "'")
-				jPermissaoGrupo.putAt("label", "'" + permissaoGrupo.nome + "'")
-				jPermissaoGrupo.putAt("checked", false)
-	
-				JSONObject jPermissaoGrupoItem = new JSONObject()
+				jPermissaoGrupoMenuChildrenAux.putAt("item", getJsonItemByPermissaoGrupo(permissaoGrupo))
 				
-				jPermissaoGrupoItem.putAt("item", jPermissaoGrupo)
-				
-				jPermissaoGrupoMenuChildren.add(jPermissaoGrupoItem)
-				
-				JSONArray jPermissaoGrupoChildren = new JSONArray()
+				JSONArray jPermissaoGrupoItem = new JSONArray()
 				
 				List listPermissao = Permissao.findAllByGrupo(permissaoGrupo, [sort: "descricao"])
 				
 				for (permissao in listPermissao) {
 					
-					JSONObject jPermissao = new JSONObject()
-					
-					jPermissao.putAt("id", "'" + permissao.id + "'")
-					jPermissao.putAt("label", "'" + permissao.descricao + "'")
-					jPermissao.putAt("checked", false)
-	
-					JSONObject jPermissaoItem = new JSONObject()
-					
-					jPermissaoItem.putAt("item", jPermissao)
-					
-					jPermissaoGrupoChildren.add(jPermissaoItem)
+					jPermissaoGrupoItem.add(getJsonItemByPermissao(permissao))
 					
 				}
-
 				
+				jPermissaoGrupoMenuChildrenAux.putAt("children", jPermissaoGrupoItem)
+				
+				jPermissaoGrupoMenuChildren.add(jPermissaoGrupoMenuChildrenAux)
 				
 			}
 			
-			retorno.add(jPermissaoGrupoMenuChildren)
+			retornoAux.putAt("children", jPermissaoGrupoMenuChildren)
+			
+			retorno.add(retornoAux)
 			
 		}
 		
 		[retorno: retorno.toString().replaceAll("\"", "")]
 				
 	}
-	
-	// DANDO CERTO - sem o menu
-	def index2() {
+
+	private JSONObject getJsonItemByPermissao(Permissao permissao) {
 		
-		List listGrupo = PermissaoGrupo.list(sort: "nome")
+		JSONObject jPermissao = new JSONObject()
+
+		jPermissao.putAt("id", "'" + permissao.id + "'")
+		jPermissao.putAt("label", "'" + permissao.descricao + "'")
+		jPermissao.putAt("checked", false)
+
+		JSONObject jPermissaoItem = new JSONObject()
+
+		jPermissaoItem.putAt("item", jPermissao)
 		
-		JSONArray retorno = new JSONArray()
-		
-		for (i in listGrupo) {
-
-			PermissaoGrupo g = (PermissaoGrupo) i
-			
-			JSONObject jGrupo = new JSONObject()
-			
-			jGrupo.putAt("id", "'" + g.id + "'")
-			jGrupo.putAt("label", "'" + g.nome + "'")
-			jGrupo.putAt("checked", false)
-			
-			JSONObject jGrupoItem = new JSONObject()
-			
-			jGrupoItem.putAt("item", jGrupo)
-
-			List listPermissao = Permissao.findAllByGrupo(i)
-			
-			if (!(listPermissao.empty)) {
-
-				JSONArray jRetornoPermissaoList = new JSONArray()
-				
-				for (z in listPermissao) {
-
-					Permissao p = (Permissao) z
-
-					JSONObject jRetornoPermissao = new JSONObject()
-										
-					jRetornoPermissao.putAt("id", "'" + p.id + "'")
-					jRetornoPermissao.putAt("label", "'" + p.descricao + "'")
-					
-					if (p.descricao.equals("Alterar") || g.nome.equals("Cliente")) {
-						jRetornoPermissao.putAt("checked", true)
-					} else {
-						jRetornoPermissao.putAt("checked", false)
-					}
-					
-					JSONObject jRetornoPermissaoItem = new JSONObject()
-					
-					jRetornoPermissaoItem.putAt("item", jRetornoPermissao)
-					
-					jRetornoPermissaoList.add(jRetornoPermissaoItem)
-				}
-				
-				jGrupoItem.putAt("children", jRetornoPermissaoList)
-				
-				retorno.add(jGrupoItem)
-				
-			}
-		}
-
-		[retorno : retorno.toString().replaceAll("\"", "")]
+		return jPermissaoItem
 		
 	}
+
+	private JSONObject getJsonItemByPermissaoGrupo(PermissaoGrupo permissaoGrupo) {
+		
+		JSONObject jPermissaoGrupo = new JSONObject()
+
+		jPermissaoGrupo.putAt("id", "'" + permissaoGrupo.id + "r'")
+		jPermissaoGrupo.putAt("label", "'" + permissaoGrupo.nome + "'")
+		jPermissaoGrupo.putAt("checked", false)
+
+		return jPermissaoGrupo
+		
+	}
+
+	private JSONObject getJsonItemByPermissaoGrupoMenu(PermissaoGrupoMenu permissaoGrupoMenu) {
+		
+		JSONObject jPermissaoGrupoMenu = new JSONObject()
+
+		jPermissaoGrupoMenu.putAt("id", "'" + permissaoGrupoMenu.id + "m'")
+		jPermissaoGrupoMenu.putAt("label", "'" + permissaoGrupoMenu.nome + "'")
+		jPermissaoGrupoMenu.putAt("checked", false)
+
+		return jPermissaoGrupoMenu
+		
+	}
+	
 }
