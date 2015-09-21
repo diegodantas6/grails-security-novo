@@ -103,4 +103,17 @@ class UsuarioPermissaoController {
             '*'{ render status: NOT_FOUND }
         }
     }
+	
+	def carregaListaPermissao() {
+		
+		Long idUser = Long.valueOf( params.id )
+		
+		if (idUser > 0L) {
+			
+			List<Permissao> list = Permissao.executeQuery("select p from Permissao p where not exists (select 1 from UsuarioPermissao up where up.usuario.id = :idUser and up.permissao = p.id)", [idUser: idUser])
+			
+			render(template:"form", model: [ listaPermissao: list ])
+	
+		}
+	}
 }
