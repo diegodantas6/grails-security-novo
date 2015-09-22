@@ -110,10 +110,28 @@ class UsuarioPermissaoController {
 		
 		if (idUser > 0L) {
 			
-			List<Permissao> list = Permissao.executeQuery("select p from Permissao p where not exists (select 1 from UsuarioPermissao up where up.usuario.id = :idUser and up.permissao = p.id)", [idUser: idUser])
+			List<Permissao> listPermissao = Permissao.executeQuery("select p from Permissao p where not exists (select 1 from UsuarioPermissao up where up.usuario.id = :idUser and up.permissao = p.id)", [idUser: idUser])
 			
-			render(template:"form", model: [ listaPermissao: list ])
+//			println listPermissao
+			
+//			render(template:"form", model: [ listaPermissao: listPermissao ])
+			
+//			respond listPermissao
+			
+//			respond model: [listaPermissao: listPermissao]
+			
+//			render(model: [ listaPermissao: listPermissao ])
+			
+//			return listPermissao
+			
+//			render listPermissao as JSON
+			
+			render g.select ( id:'permissao', name:'permissao.id', from:listPermissao, optionKey:'id', required:'', class:'many-to-one' )
 	
+		} else {
+			
+			render g.select ( id:'permissao', name:'permissao.id', from:null, optionKey:'id', required:'', class:'many-to-one' )
+		
 		}
 	}
 }

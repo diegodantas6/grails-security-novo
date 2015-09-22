@@ -19,12 +19,10 @@
 		<g:message code="usuarioPermissao.permissao.label" default="Permissao" />
 		<span class="required-indicator">*</span>
 	</label>
-	
-<%--<g:select id="permissao" name="permissao.id" from="${br.com.controleAcesso.Permissao.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
-	<g:select id="permissao" name="permissao.id" 
-	from="${listaPermissao}" 
-	optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>
+
+	<%--<g:select id="permissao" name="permissao.id" from="${br.com.controleAcesso.Permissao.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
+	<%--	<g:select id="permissao" name="permissao.id" from="${listaPermissao}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
+
+	<span id="permissao"></span>
 
 </div>
-
-
