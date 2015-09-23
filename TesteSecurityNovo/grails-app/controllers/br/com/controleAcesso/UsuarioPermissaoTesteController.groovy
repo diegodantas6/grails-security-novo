@@ -17,6 +17,10 @@ class UsuarioPermissaoTesteController {
 	static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
 	def index() {
+		
+	}
+		
+	private String getTreeViewData( Usuario usuario ) {
 
 		JSONArray retorno = new JSONArray()
 		
@@ -44,7 +48,7 @@ class UsuarioPermissaoTesteController {
 				
 				for (permissao in listPermissao) {
 					
-					jPermissaoGrupoItem.add(getJsonItemByPermissao(permissao))
+					jPermissaoGrupoItem.add(getJsonItemByPermissao(permissao, usuario))
 					
 				}
 				
@@ -60,17 +64,28 @@ class UsuarioPermissaoTesteController {
 			
 		}
 		
-		[retorno: retorno.toString().replaceAll("\"", "")]
+//		[retorno: retorno.toString().replaceAll("\"", "")]
+		
+		return retorno.toString().replaceAll("\"", "")
 				
 	}
 
-	private JSONObject getJsonItemByPermissao(Permissao permissao) {
+	private JSONObject getJsonItemByPermissao(Permissao permissao, Usuario usuario) {
 		
 		JSONObject jPermissao = new JSONObject()
 
 		jPermissao.putAt("id", "'" + permissao.id + "'")
 		jPermissao.putAt("label", "'" + permissao.descricao + "'")
-		jPermissao.putAt("checked", false)
+		
+		if ( UsuarioPermissao.findByUsuarioAndPermissao(usuario, permissao) == null ) {
+			
+			jPermissao.putAt("checked", false)
+			
+		} else {
+		
+			jPermissao.putAt("checked", true)
+			
+		}
 
 		JSONObject jPermissaoItem = new JSONObject()
 
@@ -101,6 +116,26 @@ class UsuarioPermissaoTesteController {
 		jPermissaoGrupoMenu.putAt("checked", false)
 
 		return jPermissaoGrupoMenu
+		
+	}
+	
+	def carregaTreeView() {
+		
+		Long idUser = Long.valueOf( params.id )
+		
+		if (idUser > 0L) {
+			
+			Usuario usuario = Usuario.get( idUser );
+
+			String retorno = getTreeViewData( usuario )
+			
+			render template: 'form', model: [retorno: retorno]
+						
+		} else {
+		
+			render template: 'form', model: [retorno: null]
+		
+		}
 		
 	}
 	
