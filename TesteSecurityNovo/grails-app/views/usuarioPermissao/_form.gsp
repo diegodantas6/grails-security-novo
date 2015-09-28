@@ -20,9 +20,17 @@
 		<span class="required-indicator">*</span>
 	</label>
 
-	<%--<g:select id="permissao" name="permissao.id" from="${br.com.controleAcesso.Permissao.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
-	<%--	<g:select id="permissao" name="permissao.id" from="${listaPermissao}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
+	<g:select id="permissao" name="permissao.id" from="${br.com.controleAcesso.Permissao.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>
+	
+<%--	<g:select id="permissao" name="permissao.id" from="${listaPermissao}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
 
-	<span id="permissao"></span>
+<%--	<g:if test="${name == 'fred'}">--%>
+<%--	     Hello Fred!--%>
+<%--	</g:if>--%>
+<%--	<g:else>--%>
+<%--	     Hello ${name}! Do I know you?--%>
+<%--	</g:else>--%>
+<%--	--%>
+<%--	<span id="permissao"></span>--%>
 
 </div>

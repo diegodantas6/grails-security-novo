@@ -18,6 +18,9 @@ class UsuarioPermissaoController {
     }
 
     def show(UsuarioPermissao usuarioPermissaoInstance) {
+		
+		println "passei aqui show"
+		
         respond usuarioPermissaoInstance
     }
 
@@ -27,6 +30,15 @@ class UsuarioPermissaoController {
 
     @Transactional
     def save(UsuarioPermissao usuarioPermissaoInstance) {
+		
+		println "passei aqui save"
+		
+		if (usuarioPermissaoInstance.usuario == null) {
+			println "favor dar erro"
+            notFound()
+            return
+		}
+		
         if (usuarioPermissaoInstance == null) {
             notFound()
             return
@@ -49,11 +61,17 @@ class UsuarioPermissaoController {
     }
 
     def edit(UsuarioPermissao usuarioPermissaoInstance) {
+		
+		println "passei aqui edit"
+		
         respond usuarioPermissaoInstance
     }
 
     @Transactional
     def update(UsuarioPermissao usuarioPermissaoInstance) {
+		
+		println "passei aqui update"
+		
         if (usuarioPermissaoInstance == null) {
             notFound()
             return
@@ -95,6 +113,9 @@ class UsuarioPermissaoController {
     }
 
     protected void notFound() {
+		
+		println "passei aqui notFound"
+		
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'usuarioPermissao.label', default: 'UsuarioPermissao'), params.id])
@@ -106,31 +127,19 @@ class UsuarioPermissaoController {
 	
 	def carregaListaPermissao() {
 		
+		println "passei aqui carregaListaPermissao"
+		
 		Long idUser = Long.valueOf( params.id )
 		
 		if (idUser > 0L) {
 			
 			List<Permissao> listPermissao = Permissao.executeQuery("select p from Permissao p where not exists (select 1 from UsuarioPermissao up where up.usuario.id = :idUser and up.permissao = p.id)", [idUser: idUser])
 			
-//			println listPermissao
-			
-//			render(template:"form", model: [ listaPermissao: listPermissao ])
-			
-//			respond listPermissao
-			
-//			respond model: [listaPermissao: listPermissao]
-			
-//			render(model: [ listaPermissao: listPermissao ])
-			
-//			return listPermissao
-			
-//			render listPermissao as JSON
-			
 			render g.select ( id:'permissao', name:'permissao.id', from:listPermissao, optionKey:'id', required:'', class:'many-to-one' )
 	
 		} else {
 			
-			render g.select ( id:'permissao', name:'permissao.id', from:null, optionKey:'id', required:'', class:'many-to-one' )
+			render g.select ( id:'permissao', name:'permissao.id', from:Permissao.list(), optionKey:'id', required:'', class:'many-to-one' )
 		
 		}
 	}

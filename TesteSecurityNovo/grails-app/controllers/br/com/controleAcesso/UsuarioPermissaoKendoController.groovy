@@ -3,18 +3,16 @@ package br.com.controleAcesso
 
 
 import static org.springframework.http.HttpStatus.*
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional
+import grails.transaction.Transactional;
 
+import org.codehaus.groovy.grails.cli.support.UaaEnabler;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 @Secured("IS_AUTHENTICATED_ANONYMOUSLY")
 @Transactional(readOnly = true)
-class UsuarioPermissaoTesteController {
-
-	static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
+class UsuarioPermissaoKendoController {
 
 	def index() {
 		
@@ -28,43 +26,37 @@ class UsuarioPermissaoTesteController {
 		
 		for (permissaoGrupoMenu in listPermissaoGrupoMenu) {
 			
-			JSONObject retornoAux = new JSONObject()
-			
-			retornoAux.putAt("item", getJsonItemByPermissaoGrupoMenu(permissaoGrupoMenu))
+			JSONObject retornoAux = getJsonItemByPermissaoGrupoMenu(permissaoGrupoMenu)
 
-			JSONArray jPermissaoGrupoMenuChildren = new JSONArray()
+			JSONArray retornoAuxItems1 = new JSONArray()
 			
 			List listPermissaoGrupo = PermissaoGrupo.findAllByMenu(permissaoGrupoMenu, [sort: "nome"])
 			
 			for (permissaoGrupo in listPermissaoGrupo) {
 				
-				JSONObject jPermissaoGrupoMenuChildrenAux = new JSONObject()
+				JSONObject itemAux = getJsonItemByPermissaoGrupo(permissaoGrupo)
 				
-				jPermissaoGrupoMenuChildrenAux.putAt("item", getJsonItemByPermissaoGrupo(permissaoGrupo))
-				
-				JSONArray jPermissaoGrupoItem = new JSONArray()
+				JSONArray retornoAuxItems2 = new JSONArray()
 				
 				List listPermissao = Permissao.findAllByGrupo(permissaoGrupo, [sort: "descricao"])
 				
 				for (permissao in listPermissao) {
 					
-					jPermissaoGrupoItem.add(getJsonItemByPermissao(permissao, usuario))
+					retornoAuxItems2.add(getJsonItemByPermissao(permissao, usuario))
 					
 				}
 				
-				jPermissaoGrupoMenuChildrenAux.putAt("children", jPermissaoGrupoItem)
+				itemAux.putAt("items", retornoAuxItems2)
 				
-				jPermissaoGrupoMenuChildren.add(jPermissaoGrupoMenuChildrenAux)
+				retornoAuxItems1.add(itemAux)
 				
 			}
 			
-			retornoAux.putAt("children", jPermissaoGrupoMenuChildren)
+			retornoAux.putAt("items", retornoAuxItems1)
 			
 			retorno.add(retornoAux)
 			
 		}
-		
-//		[retorno: retorno.toString().replaceAll("\"", "")]
 		
 		return retorno.toString().replaceAll("\"", "")
 				
@@ -75,7 +67,7 @@ class UsuarioPermissaoTesteController {
 		JSONObject jPermissao = new JSONObject()
 
 		jPermissao.putAt("id", "'" + permissao.id + "'")
-		jPermissao.putAt("label", "'" + permissao.descricao + "'")
+		jPermissao.putAt("text", "'" + permissao.descricao + "'")
 		
 		if ( UsuarioPermissao.findByUsuarioAndPermissao(usuario, permissao) == null ) {
 			
@@ -87,11 +79,7 @@ class UsuarioPermissaoTesteController {
 			
 		}
 
-		JSONObject jPermissaoItem = new JSONObject()
-
-		jPermissaoItem.putAt("item", jPermissao)
-		
-		return jPermissaoItem
+		return jPermissao
 		
 	}
 
@@ -100,8 +88,9 @@ class UsuarioPermissaoTesteController {
 		JSONObject jPermissaoGrupo = new JSONObject()
 
 		jPermissaoGrupo.putAt("id", "'" + permissaoGrupo.id + "r'")
-		jPermissaoGrupo.putAt("label", "'" + permissaoGrupo.nome + "'")
-		jPermissaoGrupo.putAt("checked", false)
+		jPermissaoGrupo.putAt("text", "'" + permissaoGrupo.nome + "'")
+		jPermissaoGrupo.putAt("spriteCssClass", "'folder'")
+		jPermissaoGrupo.putAt("expanded", true)
 
 		return jPermissaoGrupo
 		
@@ -112,8 +101,9 @@ class UsuarioPermissaoTesteController {
 		JSONObject jPermissaoGrupoMenu = new JSONObject()
 
 		jPermissaoGrupoMenu.putAt("id", "'" + permissaoGrupoMenu.id + "m'")
-		jPermissaoGrupoMenu.putAt("label", "'" + permissaoGrupoMenu.nome + "'")
-		jPermissaoGrupoMenu.putAt("checked", false)
+		jPermissaoGrupoMenu.putAt("text", "'" + permissaoGrupoMenu.nome + "'")
+		jPermissaoGrupoMenu.putAt("spriteCssClass", "'rootfolder'")
+		jPermissaoGrupoMenu.putAt("expanded", true)
 
 		return jPermissaoGrupoMenu
 		
@@ -137,6 +127,43 @@ class UsuarioPermissaoTesteController {
 		
 		}
 		
+	}
+	
+	@Transactional
+	def save(UsuarioPermissao usuarioPermissaoInstance) {
+
+		Usuario usuario = Usuario.get(params.usuario.id)
+		
+		if (usuario != null) {
+		
+			UsuarioPermissao.removeAll(usuario, true)
+			
+			String[] permissoes = params.result.toString().split(",")
+			
+			for (idPermissao in permissoes) {
+				
+				if (isInteger(idPermissao)) {
+					
+					Permissao permissao = Permissao.get(idPermissao)
+					
+					UsuarioPermissao usuarioPermissao = new UsuarioPermissao(usuario: usuario, permissao: permissao)
+					
+					usuarioPermissao.save flush:true
+				}
+				
+			}
+				
+		}
+		
+	}
+	
+	private boolean isInteger(String string) {
+		try {
+			Integer.parseInt(string)
+			return true
+		} catch (Exception e) {
+			return false
+		}
 	}
 	
 }
