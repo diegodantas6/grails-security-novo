@@ -33,8 +33,7 @@
 
 		// show checked node IDs on datasource change
 		function onCheck() {
-			var checkedNodes = [], treeView = $("#treeview").data(
-					"kendoTreeView"), message;
+			var checkedNodes = [], treeView = $("#treeview").data("kendoTreeView"), message;
 
 			checkedNodeIds(treeView.dataSource.view(), checkedNodes);
 
@@ -51,28 +50,28 @@
 	</script>
 
 	<style>
-#treeview .k-sprite {
-	background-image: url("../assets/kendo/coloricons-sprite.png");
-}
-
-.rootfolder {
-	background-position: 0 0;
-}
-
-.folder {
-	background-position: 0 -16px;
-}
-
-.pdf {
-	background-position: 0 -32px;
-}
-
-.html {
-	background-position: 0 -48px;
-}
-
-.image {
-	background-position: 0 -64px;
-}
-</style>
+		#treeview .k-sprite {
+			background-image: url("../assets/kendo/coloricons-sprite.png");
+		}
+		
+		.rootfolder {
+			background-position: 0 0;
+		}
+		
+		.folder {
+			background-position: 0 -16px;
+		}
+		
+		.pdf {
+			background-position: 0 -32px;
+		}
+		
+		.html {
+			background-position: 0 -48px;
+		}
+		
+		.image {
+			background-position: 0 -64px;
+		}
+	</style>
 </div>

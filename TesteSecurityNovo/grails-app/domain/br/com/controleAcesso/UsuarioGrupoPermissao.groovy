@@ -43,7 +43,7 @@ class UsuarioGrupoPermissao implements Serializable {
 	static boolean exists(long usuarioGrupoId, long permissaoId) {
 		criteriaFor(usuarioGrupoId, permissaoId).count()
 	}
-
+	
 	private static DetachedCriteria criteriaFor(long usuarioGrupoId, long permissaoId) {
 		UsuarioGrupoPermissao.where {
 			usuarioGrupo == UsuarioGrupo.load(usuarioGrupoId) &&
@@ -57,28 +57,10 @@ class UsuarioGrupoPermissao implements Serializable {
 		instance
 	}
 
-	static boolean remove(UsuarioGrupo u, Permissao r, boolean flush = false) {
-		if (u == null || r == null) return false
-
-		int rowCount = UsuarioGrupoPermissao.where { usuarioGrupo == u && permissao == r }.deleteAll()
-
-		if (flush) { UsuarioGrupoPermissao.withSession { it.flush() } }
-
-		rowCount
-	}
-
 	static void removeAll(UsuarioGrupo u, boolean flush = false) {
 		if (u == null) return
 
 		UsuarioGrupoPermissao.where { usuarioGrupo == u }.deleteAll()
-
-		if (flush) { UsuarioGrupoPermissao.withSession { it.flush() } }
-	}
-
-	static void removeAll(Permissao r, boolean flush = false) {
-		if (r == null) return
-
-		UsuarioGrupoPermissao.where { permissao == r }.deleteAll()
 
 		if (flush) { UsuarioGrupoPermissao.withSession { it.flush() } }
 	}

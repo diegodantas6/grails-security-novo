@@ -57,28 +57,10 @@ class UsuarioPermissao implements Serializable {
 		instance
 	}
 
-	static boolean remove(Usuario u, Permissao r, boolean flush = false) {
-		if (u == null || r == null) return false
-
-		int rowCount = UsuarioPermissao.where { usuario == u && permissao == r }.deleteAll()
-
-		if (flush) { UsuarioPermissao.withSession { it.flush() } }
-
-		rowCount
-	}
-
 	static void removeAll(Usuario u, boolean flush = false) {
 		if (u == null) return
 
 		UsuarioPermissao.where { usuario == u }.deleteAll()
-
-		if (flush) { UsuarioPermissao.withSession { it.flush() } }
-	}
-
-	static void removeAll(Permissao r, boolean flush = false) {
-		if (r == null) return
-
-		UsuarioPermissao.where { permissao == r }.deleteAll()
 
 		if (flush) { UsuarioPermissao.withSession { it.flush() } }
 	}
@@ -97,7 +79,6 @@ class UsuarioPermissao implements Serializable {
 	}
 
 	static mapping = {
-//		id composite: ['usuario', 'permissao']
 		version false
 		permissao lazy: false 
 	}

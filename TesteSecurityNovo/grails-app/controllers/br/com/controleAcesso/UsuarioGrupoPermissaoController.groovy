@@ -12,13 +12,13 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 @Secured("IS_AUTHENTICATED_ANONYMOUSLY")
 @Transactional(readOnly = true)
-class UsuarioPermissaoKendoController {
+class UsuarioGrupoPermissaoController {
 
 	def index() {
 		
 	}
 		
-	private String getTreeViewData( Usuario usuario ) {
+	private String getTreeViewData( UsuarioGrupo usuarioGrupo ) {
 
 		JSONArray retorno = new JSONArray()
 		
@@ -42,7 +42,7 @@ class UsuarioPermissaoKendoController {
 				
 				for (permissao in listPermissao) {
 					
-					retornoAuxItems2.add(getJsonItemByPermissao(permissao, usuario))
+					retornoAuxItems2.add(getJsonItemByPermissao(permissao, usuarioGrupo))
 					
 				}
 				
@@ -62,14 +62,14 @@ class UsuarioPermissaoKendoController {
 				
 	}
 
-	private JSONObject getJsonItemByPermissao(Permissao permissao, Usuario usuario) {
+	private JSONObject getJsonItemByPermissao(Permissao permissao, UsuarioGrupo usuarioGrupo) {
 		
 		JSONObject jPermissao = new JSONObject()
 
 		jPermissao.putAt("id", "'" + permissao.id + "'")
 		jPermissao.putAt("text", "'" + permissao.descricao + "'")
 		
-		if ( UsuarioPermissao.findByUsuarioAndPermissao(usuario, permissao) == null ) {
+		if ( UsuarioGrupoPermissao.findByUsuarioGrupoAndPermissao(usuarioGrupo, permissao) == null ) {
 			
 			jPermissao.putAt("checked", false)
 			
@@ -111,13 +111,13 @@ class UsuarioPermissaoKendoController {
 	
 	def carregaTreeView() {
 		
-		Long idUser = Long.valueOf( params.id )
+		Long idUserGroup = Long.valueOf( params.id )
 		
-		if (idUser > 0L) {
+		if (idUserGroup > 0L) {
 			
-			Usuario usuario = Usuario.get( idUser );
+			UsuarioGrupo usuarioGrupo = UsuarioGrupo.get( idUserGroup );
 
-			String retorno = getTreeViewData( usuario )
+			String retorno = getTreeViewData( usuarioGrupo )
 			
 			render template: 'form', model: [retorno: retorno]
 						
@@ -130,13 +130,17 @@ class UsuarioPermissaoKendoController {
 	}
 	
 	@Transactional
-	def save(UsuarioPermissao usuarioPermissaoInstance) {
+	def save() {
 
-		Usuario usuario = Usuario.get(params.usuario.id)
+		UsuarioGrupo usuarioGrupo = UsuarioGrupo.get(params.grupo.id)
 		
-		if (usuario != null) {
+		if (usuarioGrupo == null) {
+			
+			render("Favor selecionar o Grupo Usuário!")
+			
+		} else {
 		
-			UsuarioPermissao.removeAll(usuario, true)
+			UsuarioGrupoPermissao.removeAll(usuarioGrupo, true)
 			
 			String[] permissoes = params.result.toString().split(",")
 			
@@ -146,13 +150,14 @@ class UsuarioPermissaoKendoController {
 					
 					Permissao permissao = Permissao.get(idPermissao)
 					
-					UsuarioPermissao usuarioPermissao = new UsuarioPermissao(usuario: usuario, permissao: permissao)
+					UsuarioGrupoPermissao.create(usuarioGrupo, permissao, true)
 					
-					usuarioPermissao.save flush:true
 				}
 				
 			}
 				
+			render("Salvo com sucesso!")
+			
 		}
 		
 	}

@@ -4,7 +4,7 @@
 	<meta name="layout" content="main">
 	
 	<title>
-		Usuáio Permissão
+		Grupo Usuáio Permissão
 	</title>
 	
     <asset:stylesheet href="kendo/kendo.common-material.min.css" />
@@ -23,33 +23,34 @@
 		</ul>
 	</div>
 
-	<div id="edit-usuarioPermissao" class="content scaffold-edit" role="main">
+	<div id="edit-usuarioGrupoPermissao" class="content scaffold-edit" role="main">
 	
 		<div class="message" id="message" ></div>
 
-		<g:formRemote  name="frmUsuarioPermissao" url="[controller: 'usuarioPermissao', action: 'save']" update="message" >
+		<g:formRemote  name="frmUsuarioGrupoPermissao" url="[controller: 'usuarioGrupoPermissao', action: 'save']" update="message" >
 		
 			<fieldset class="form">
 			
-				<div class="fieldcontain ${hasErrors(bean: usuarioPermissaoInstance, field: 'usuario', 'error')} required">
-				
-					<label for="usuario">
-					
-						<g:message code="usuarioPermissao.usuario.label" default="Usuario" />
-						
+				<div class="fieldcontain ${hasErrors(bean: usuarioInstance, field: 'grupo', 'error')} required">
+
+					<label for="grupo">
+
+						<g:message code="usuario.grupo.label" default="Grupo Usuário" />
+
 						<span class="required-indicator">*</span>
-						
+
 					</label>
-			
-					<g:select id="usuario" 
-						name="usuario.id" 
-						from="${br.com.controleAcesso.Usuario.list()}" 
+
+					<g:select id="grupo" 
+						name="grupo.id" 
+						from="${br.com.controleAcesso.UsuarioGrupo.list()}" 
 						optionKey="id" 
 						required="" 
-						value="${usuarioPermissaoInstance?.usuario?.id}" 
+						value="${usuarioInstance?.grupo?.id}" 
 						class="many-to-one"
 						noSelection="${[0: '']}" 
 						onChange="${remoteFunction(action: 'carregaTreeView', params:'\'id=\' + this.value', update:'example')}" />
+				
 				</div>
 			
 				<g:render template="form"/>

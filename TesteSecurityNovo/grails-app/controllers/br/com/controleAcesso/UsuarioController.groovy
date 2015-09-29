@@ -38,6 +38,20 @@ class UsuarioController {
         }
 
         usuarioInstance.save flush:true
+		
+		// ************************************************
+		// Incluir as permissoes do grupo no usuario
+		// ************************************************
+		List<UsuarioGrupoPermissao> listUsuarioGrupoPermissao = UsuarioGrupoPermissao.findAllByUsuarioGrupo(usuarioInstance.grupo)
+		
+		for (usuarioGrupoPermissao in listUsuarioGrupoPermissao) {
+			
+			UsuarioPermissao.create(usuarioInstance, usuarioGrupoPermissao.permissao, true)
+			
+		}
+		// ************************************************
+		// FIM - Incluir as permissoes do grupo no usuario
+		// ************************************************
 
         request.withFormat {
             form multipartForm {

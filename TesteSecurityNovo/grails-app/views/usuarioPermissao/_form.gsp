@@ -1,36 +1,77 @@
-<%@ page import="br.com.controleAcesso.UsuarioPermissao" %>
+<div id="example">
 
+	<div class="demo-section k-header">
+		Permissões
+		<div id="treeview"></div>
+		<input id="result" name="result" type="hidden" />
+	</div>
 
+	<script>
+		$("#treeview").kendoTreeView({
+			checkboxes : {
+				checkChildren : true
+			},
 
-<div class="fieldcontain ${hasErrors(bean: usuarioPermissaoInstance, field: 'usuario', 'error')} required">
-	<label for="usuario">
-		<g:message code="usuarioPermissao.usuario.label" default="Usuario" />
-		<span class="required-indicator">*</span>
-	</label>
-	<g:select id="usuario" 
-	noSelection="${[0: 'Select One...']}"
-	onChange="${remoteFunction(action: 'carregaListaPermissao', params:'\'id=\' + this.value', update:'permissao')}"
-	name="usuario.id" from="${br.com.controleAcesso.Usuario.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.usuario?.id}" class="many-to-one"/>
+			check : onCheck,
 
-</div>
+			dataSource : ${raw(retorno)}
 
-<div class="fieldcontain ${hasErrors(bean: usuarioPermissaoInstance, field: 'permissao', 'error')} required">
-	<label for="permissao">
-		<g:message code="usuarioPermissao.permissao.label" default="Permissao" />
-		<span class="required-indicator">*</span>
-	</label>
+		});
 
-	<g:select id="permissao" name="permissao.id" from="${br.com.controleAcesso.Permissao.list()}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>
-	
-<%--	<g:select id="permissao" name="permissao.id" from="${listaPermissao}" optionKey="id" required="" value="${usuarioPermissaoInstance?.permissao?.id}" class="many-to-one"/>--%>
+		// function that gathers IDs of checked nodes
+		function checkedNodeIds(nodes, checkedNodes) {
+			for (var i = 0; i < nodes.length; i++) {
+				if (nodes[i].checked) {
+					checkedNodes.push(nodes[i].id);
+				}
 
-<%--	<g:if test="${name == 'fred'}">--%>
-<%--	     Hello Fred!--%>
-<%--	</g:if>--%>
-<%--	<g:else>--%>
-<%--	     Hello ${name}! Do I know you?--%>
-<%--	</g:else>--%>
-<%--	--%>
-<%--	<span id="permissao"></span>--%>
+				if (nodes[i].hasChildren) {
+					checkedNodeIds(nodes[i].children.view(), checkedNodes);
+				}
+			}
+		}
 
+		// show checked node IDs on datasource change
+		function onCheck() {
+			var checkedNodes = [], treeView = $("#treeview").data("kendoTreeView"), message;
+
+			checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+			if (checkedNodes.length > 0) {
+				message = checkedNodes.join(",");
+			} else {
+				message = "";
+			}
+
+			$("#result").val(message);
+		}
+
+		onCheck();
+	</script>
+
+	<style>
+		#treeview .k-sprite {
+			background-image: url("../assets/kendo/coloricons-sprite.png");
+		}
+		
+		.rootfolder {
+			background-position: 0 0;
+		}
+		
+		.folder {
+			background-position: 0 -16px;
+		}
+		
+		.pdf {
+			background-position: 0 -32px;
+		}
+		
+		.html {
+			background-position: 0 -48px;
+		}
+		
+		.image {
+			background-position: 0 -64px;
+		}
+	</style>
 </div>
