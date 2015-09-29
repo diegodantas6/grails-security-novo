@@ -11,3 +11,12 @@
 
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: permissaoGrupoInstance, field: 'menu', 'error')} required">
+	<label for="menu">
+		<g:message code="permissaoGrupo.menu.label" default="Menu" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:select id="menu" name="menu.id" from="${br.com.controleAcesso.PermissaoGrupoMenu.list()}" optionKey="id" required="" value="${permissaoGrupoInstance?.menu?.id}" class="many-to-one"/>
+
+</div>
+

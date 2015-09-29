@@ -32,6 +32,15 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${permissaoGrupoInstance?.menu}">
+				<li class="fieldcontain">
+					<span id="menu-label" class="property-label"><g:message code="permissaoGrupo.menu.label" default="Menu" /></span>
+					
+						<span class="property-value" aria-labelledby="menu-label"><g:link controller="permissaoGrupoMenu" action="show" id="${permissaoGrupoInstance?.menu?.id}">${permissaoGrupoInstance?.menu?.encodeAsHTML()}</g:link></span>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form url="[resource:permissaoGrupoInstance, action:'delete']" method="DELETE">
 				<fieldset class="buttons">

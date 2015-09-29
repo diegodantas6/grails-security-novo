@@ -26,6 +26,8 @@
 					
 						<g:sortableColumn property="nome" title="${message(code: 'permissaoGrupo.nome.label', default: 'Nome')}" />
 					
+						<th><g:message code="permissaoGrupo.menu.label" default="Menu" /></th>
+					
 					</tr>
 				</thead>
 				<tbody>
@@ -33,6 +35,8 @@
 					<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 					
 						<td><g:link action="show" id="${permissaoGrupoInstance.id}">${fieldValue(bean: permissaoGrupoInstance, field: "nome")}</g:link></td>
+					
+						<td>${fieldValue(bean: permissaoGrupoInstance, field: "menu")}</td>
 					
 					</tr>
 				</g:each>
