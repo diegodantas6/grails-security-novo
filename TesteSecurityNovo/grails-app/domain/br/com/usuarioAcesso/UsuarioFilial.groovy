@@ -66,6 +66,16 @@ class UsuarioFilial implements Serializable {
 		if (flush) { UsuarioFilial.withSession { it.flush() } }
 	}
 
+	static void removeAll(Usuario u, Empresa e) {
+		if (u == null) return
+		
+		if (e == null) return
+
+		List listUsuarioFIlial = UsuarioFilial.executeQuery("select uf from UsuarioFilial uf where uf.usuario.id = :idUsuario and exists (select 1 from Filial f where f.empresa.id = :idEmpresa and f.id = uf.filial.id)", [idUsuario: u.id, idEmpresa: e.id])
+		
+		listUsuarioFIlial.each { it.delete(flush:true) }
+	}
+
 	static constraints = {
 		filial validator: { Filial r, UsuarioFilial ur ->
 			if (ur.usuario == null || ur.usuario.id == null) return

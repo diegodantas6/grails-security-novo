@@ -62,7 +62,7 @@
 						
 					</label>
 			
-					<g:select id="empresa" name="empresa" from="" />
+					<span id="empresa"></span>
 				</div>
 
 				<g:render template="form"/>

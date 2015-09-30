@@ -31,11 +31,11 @@ class UsuarioFilialController {
 		
 		JSONArray retornoAuxItems = new JSONArray()
 
-		List listEmpresa = Empresa.list(sort: "nome")
+		List listFilial = Filial.findAllByEmpresa(empresa, [sort: "nome"])
 
-		for (empresa2 in listEmpresa) {
+		for (filial in listFilial) {
 			
-			retornoAuxItems.add(getJsonItem(empresa2, usuario))
+			retornoAuxItems.add(getJsonItem(filial, usuario))
 					
 		}
 			
@@ -47,14 +47,14 @@ class UsuarioFilialController {
 				
 	}
 
-	private JSONObject getJsonItem(Empresa empresa, Usuario usuario) {
+	private JSONObject getJsonItem(Filial filial, Usuario usuario) {
 		
 		JSONObject json = new JSONObject()
 
-		json.putAt("id", "'" + empresa.id + "'")
-		json.putAt("text", "'" + empresa.nome + "'")
+		json.putAt("id", "'" + filial.id + "'")
+		json.putAt("text", "'" + filial.nome + "'")
 		
-		if ( UsuarioEmpresa.findByUsuarioAndEmpresa(usuario, empresa) == null ) {
+		if ( UsuarioFilial.findByUsuarioAndFilial(usuario, filial) == null ) {
 			
 			json.putAt("checked", false)
 			
@@ -73,7 +73,7 @@ class UsuarioFilialController {
 		JSONObject json = new JSONObject()
 
 		json.putAt("id", "'1m'")
-		json.putAt("text", "'Empresas'")
+		json.putAt("text", "'Filiais'")
 		json.putAt("spriteCssClass", "'rootfolder'")
 		json.putAt("expanded", true)
 
@@ -87,9 +87,15 @@ class UsuarioFilialController {
 		
 		if (idUsuario > 0L) {
 			
+			String strUsuario = String.valueOf( idUsuario )
+			
+			String param = '\'idEmpresa=\'+this.value+\'&idUsuario=' + strUsuario + '\''
+			
 			List<Empresa> listEmpresa = Empresa.executeQuery("select e from Empresa e where exists (select 1 from UsuarioEmpresa ue where ue.usuario.id = :idUsuario and ue.empresa = e.id)", [idUsuario: idUsuario])
 			
-			render g.select ( id:'empresa', name:'empresa.id', from:listEmpresa, optionKey:'id', required:'', class:'many-to-one', noSelection:[0:''] )
+			render g.select ( id:'empresa', name:'empresa.id', from:listEmpresa, optionKey:'id', required:'', class:'many-to-one', noSelection:[0:''], onChange:remoteFunction(action: 'carregaTreeView', params: param, update:'example') )
+			
+//			render g.select ( id:'empresa', name:'empresa.id', from:listEmpresa, optionKey:'id', required:'', class:'many-to-one', noSelection:[0:''], onSelect:remoteFunction(action: 'carregaTreeView', params: param, update:'example') )
 			
 		} else {
 		
@@ -140,7 +146,7 @@ class UsuarioFilialController {
 			
 		} else {
 		
-			UsuarioFilial.removeAll(usuario, true)
+			UsuarioFilial.removeAll(usuario, empresa)
 			
 			String[] filiais = params.result.toString().split(",")
 			
