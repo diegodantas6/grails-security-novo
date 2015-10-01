@@ -26,19 +26,19 @@ environments {
     development {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://127.0.0.1:3307/teste_security_novo"
+            url = "jdbc:mysql://127.0.0.1:3306/teste_security_novo"
         }
     }
     test {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://127.0.0.1:3307/teste_security_novo"
+            url = "jdbc:mysql://127.0.0.1:3306/teste_security_novo"
         }
     }
     production {
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://127.0.0.1:3307/teste_security_novo"
+            url = "jdbc:mysql://127.0.0.1:3306/teste_security_novo"
         }
     }
 }
