@@ -4,9 +4,8 @@ package br.com.controleAcesso
 
 import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.annotation.Secured
-import grails.transaction.Transactional;
+import grails.transaction.Transactional
 
-import org.codehaus.groovy.grails.cli.support.UaaEnabler;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
@@ -17,12 +16,35 @@ class UsuarioPermissaoController {
 	def index() {
 		
 	}
+	
+	private List<PermissaoGrupoMenu> getListPermissaoGrupoMenu( Usuario usuario ) {
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append(" select pgm                                                                     ")
+		sql.append(" from PermissaoGrupoMenu pgm                                                    ")
+		sql.append(" where exists (select 1                                                         ")
+		sql.append("               from PermissaoGrupo pg                                           ")
+		sql.append("               where pg.menu = pgm.id                                           ")
+		sql.append("               and   exists (select 1                                           ")
+		sql.append("                             from Permissao p                                   ")
+		sql.append("                             where p.grupo = pg.id                              ")
+		sql.append("                             and   exists (select 1                             ")
+		sql.append("                                           from UsuarioGrupoPermissao ugp       ")
+		sql.append("                                           where ugp.permissao = p.id           ")
+		sql.append("                                           and   ugp.usuarioGrupo = :idGrupo))) ")
+		sql.append(" order by pgm.nome                                                              ")
+		
+		return PermissaoGrupoMenu.executeQuery(sql.toString(), [idGrupo: usuario.grupo])
+		
+	}
 		
 	private String getTreeViewData( Usuario usuario ) {
 
 		JSONArray retorno = new JSONArray()
 		
-		List listPermissaoGrupoMenu = PermissaoGrupoMenu.list(sort: "nome")
+//		List listPermissaoGrupoMenu = PermissaoGrupoMenu.list(sort: "nome")
+				
+		List listPermissaoGrupoMenu = getListPermissaoGrupoMenu(usuario)
 		
 		for (permissaoGrupoMenu in listPermissaoGrupoMenu) {
 			
