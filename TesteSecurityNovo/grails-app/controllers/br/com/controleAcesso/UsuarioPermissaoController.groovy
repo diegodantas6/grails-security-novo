@@ -38,6 +38,41 @@ class UsuarioPermissaoController {
 		
 	}
 		
+	private List<PermissaoGrupo> getListPermissaoGrupo( Usuario usuario, PermissaoGrupoMenu permissaoGrupoMenu ) {
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append(" select pg                                                       ")
+		sql.append(" from PermissaoGrupo pg                                          ")
+		sql.append(" where exists (select 1                                          ")
+		sql.append("               from Permissao p                                  ")
+		sql.append("               where p.grupo = pg.id                             ")
+		sql.append("               and   exists (select 1                            ")
+		sql.append("                             from UsuarioGrupoPermissao ugp      ")
+		sql.append("                             where ugp.permissao = p.id          ")
+		sql.append("                             and   ugp.usuarioGrupo = :idGrupo)) ")
+		sql.append(" and pg.menu = :idMenu                                           ")
+		sql.append(" order by pg.nome                                                ")
+		
+		return PermissaoGrupo.executeQuery(sql.toString(), [idGrupo: usuario.grupo, idMenu: permissaoGrupoMenu])
+		
+	}
+
+	private List<Permissao> getListPermissao( Usuario usuario, PermissaoGrupo permissaoGrupo ) {
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append(" select p                                         ")
+		sql.append(" from Permissao p                                 ")
+		sql.append(" where exists (select 1                           ")
+		sql.append("               from UsuarioGrupoPermissao ugp     ")
+		sql.append("               where ugp.permissao = p.id         ")
+		sql.append("               and   ugp.usuarioGrupo = :idGrupo) ")
+		sql.append(" and p.grupo = :idMenu                            ")
+		sql.append(" order by p.descricao                             ")
+		
+		return PermissaoGrupo.executeQuery(sql.toString(), [idGrupo: usuario.grupo, idMenu: permissaoGrupo])
+		
+	}
+
 	private String getTreeViewData( Usuario usuario ) {
 
 		JSONArray retorno = new JSONArray()
@@ -52,7 +87,9 @@ class UsuarioPermissaoController {
 
 			JSONArray retornoAuxItems1 = new JSONArray()
 			
-			List listPermissaoGrupo = PermissaoGrupo.findAllByMenu(permissaoGrupoMenu, [sort: "nome"])
+//			List listPermissaoGrupo = PermissaoGrupo.findAllByMenu(permissaoGrupoMenu, [sort: "nome"])
+			
+			List listPermissaoGrupo = getListPermissaoGrupo(usuario, permissaoGrupoMenu)
 			
 			for (permissaoGrupo in listPermissaoGrupo) {
 				
@@ -60,7 +97,9 @@ class UsuarioPermissaoController {
 				
 				JSONArray retornoAuxItems2 = new JSONArray()
 				
-				List listPermissao = Permissao.findAllByGrupo(permissaoGrupo, [sort: "descricao"])
+//				List listPermissao = Permissao.findAllByGrupo(permissaoGrupo, [sort: "descricao"])
+				
+				List listPermissao = getListPermissao(usuario, permissaoGrupo)
 				
 				for (permissao in listPermissao) {
 					

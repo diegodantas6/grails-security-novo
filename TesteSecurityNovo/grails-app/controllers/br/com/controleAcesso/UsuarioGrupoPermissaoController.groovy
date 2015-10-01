@@ -155,7 +155,24 @@ class UsuarioGrupoPermissaoController {
 				}
 				
 			}
-				
+
+			StringBuilder sql = new StringBuilder()
+			
+			sql.append(" select up                                             ")
+			sql.append(" from UsuarioPermissao up, Usuario u                   ")
+			sql.append(" where up.usuario = u                                  ")
+			sql.append(" and   u.grupo = :grupo                                ")
+			sql.append(" and   not exists (select 1                            ")
+			sql.append("                   from UsuarioGrupoPermissao ugp      ")
+			sql.append("                   where u.grupo = ugp.usuarioGrupo    ")
+			sql.append("                   and   up.permissao = ugp.permissao) ")
+
+			List listUsuarioPermissao = UsuarioPermissao.executeQuery(sql.toString(), [grupo: usuarioGrupo])
+			
+			listUsuarioPermissao.each {
+				it.delete(flush:true)
+			}
+			
 			render("Salvo com sucesso!")
 			
 		}
